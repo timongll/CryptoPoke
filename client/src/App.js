@@ -7,15 +7,8 @@ import "./App.css";
 class App extends Component {
   constructor(props){
     super(props);
-    const people = [];
 
-    for (let i = 0; i < 10; i++) {
-      people.push({
-          name: i
-      });
-  }
    this.state={
-    people: people,
     newPokemonNickname:"", 
     txtStatus: "hi", 
     displayedPokemons:[0,1,2,3,4,5],
@@ -67,6 +60,8 @@ class App extends Component {
         // https://web3js.readthedocs.io/en/1.0/web3-eth-contract.html#methods-mymethod-send
       });
     }
+
+  
   
 
   getPokemonByOwner(owner) {
@@ -80,22 +75,23 @@ class App extends Component {
   
   displayPokemons(ids) {
     this.setState({txtStatus: "5"})
-    this.setState({displayedPokemons2:[]})
+    var results = [];
     for (let id of ids) {
       console.log("aa" + id);
       this.getPokemonDetails(id).then(function(id) {
-        this.setState( prevState => ({
-          displayedPokemons2: [prevState.displayedPokemons2, id]
-        }))
-      }.bind(this))
-    }
-  }
+        //this.setState({ displayedPokemons2: this.state.displayedPokemons2.push(id)})
+        results.push(id)
+  })
+//console.log(results)
+this.setState({ displayedPokemons2: results})
+}}
   
   handleCreateNewPokemonButton = (event) => {
     this.createRandomPoke(this.state.newPokemonNickname)
   }
   handleDisplayPokemons = (event) => {
     this.displayPokemons(this.state.displayedPokemons);
+    this.forceUpdate();
   }
 
   handleNewPokemonNameChange = (event) => {
@@ -112,14 +108,24 @@ class App extends Component {
         <h1>Good to Go!</h1>
         <label>
              
+        
               <input type="text" value={this.state.newPokemonNickname} onChange={this.handleNewPokemonNameChange} />
               <button onClick={this.handleCreateNewPokemonButton} >Create Pokemon</button>
               <button onClick={this.handleDisplayPokemons} >Show Pokemon</button>
             </label>
-        {this.state.displayedPokemons2.map(( pokemons, index) => (
-          <p key = {index}>
-            {pokemons.nickname}</p>
-        ))}
+            <table border="1">
+              <thead>
+                <tr >
+                  <td>Name</td>
+                  <td>DNA</td>
+                  <td>Level</td>
+                </tr>
+              </thead>
+              <tbody>
+              {console.log(this.state.displayedPokemons2[0])}
+              
+              </tbody>
+            </table>
 
 
         
