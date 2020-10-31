@@ -1,5 +1,6 @@
 async function increase(duration) {
 
+  
   //first, let's increase time
   await web3.currentProvider.send({
       jsonrpc: "2.0",

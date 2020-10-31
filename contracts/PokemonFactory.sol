@@ -5,19 +5,23 @@ import "./Ownable.sol";
 contract PokemonFactory is Ownable{
 
 
-    event NewPokemon(uint slot, string name, string nickname, uint dna, uint pokedexNum, string stype);  
+    event NewPokemon(uint id, string name, string nickname, uint dna, uint pokedexNum, string stype);  
     uint randNonce = 0;
     uint dnaDigits = 16;
     uint dnaModulus = 10 ** dnaDigits; 
+    uint cooldownTime = 30 seconds;
 
 
     struct Pokemon {
         string name;
         string nickname;
         string stype;
+        uint id;
         uint dna;
         uint pokedexNum;
         uint level;
+        uint readyTime;
+        uint health;
     }
     constructor() public {
         pokedexNumToName[1] = "bulbasaur";
@@ -27,6 +31,19 @@ contract PokemonFactory is Ownable{
         pokemonNumToType[2] = "fire";
         pokemonNumToType[3] = "water";
 
+        pokedexNumToName[4] = "ivysaur";
+        pokedexNumToName[5] = "charmeleon";
+        pokedexNumToName[6] = "wartortle";
+        pokemonNumToType[4] = "grass";
+        pokemonNumToType[5] = "fire";
+        pokemonNumToType[6] = "water";
+
+        pokedexNumToName[7] = "venusaur";
+        pokedexNumToName[8] = "charizard";
+        pokedexNumToName[9] = "blastoise";
+        pokemonNumToType[7] = "grass";
+        pokemonNumToType[8] = "fire";
+        pokemonNumToType[9] = "water";
     }
 
     Pokemon[] public pokemons;
@@ -41,10 +58,11 @@ contract PokemonFactory is Ownable{
     }
 
     function _createPokemon(string memory _name, string memory _nickname, uint _dna, uint _pokedexNum, string memory _stype) public {
-        uint slot = pokemons.push(Pokemon(_name, _nickname, _stype, _dna, _pokedexNum, 1)) - 1;
-        pokemonToOwner[slot] = msg.sender;
+        uint idPoke = pokemons.push(Pokemon(_name, _nickname, _stype, 0, _dna, _pokedexNum, 1, uint(now), 100)) - 1;
+        pokemonToOwner[idPoke] = msg.sender;
         ownerPokemonCount[msg.sender]++;
-        emit NewPokemon(slot, _name, _nickname, _dna, _pokedexNum, _stype);
+        pokemons[idPoke].id = idPoke;
+        emit NewPokemon(idPoke, _name, _nickname, _dna, _pokedexNum, _stype);
     }
 
     function _generateRandomDna(string memory _str) private returns (uint) {
@@ -58,7 +76,7 @@ contract PokemonFactory is Ownable{
         return uint(keccak256(abi.encodePacked(now, msg.sender, randNonce))) % _modulus;
     } 
 
-    function getPokemonsByOwner (address _owner) external view returns (uint[] memory) {
+    function getPokemonsByOwner (address _owner) public returns (uint[] memory) {
         uint[] memory result = new uint[](ownerPokemonCount[_owner]);
         uint counter = 0;
         for (uint i = 0; i < pokemons.length; i++) {
