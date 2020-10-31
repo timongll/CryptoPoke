@@ -1,7 +1,7 @@
 pragma solidity >=0.5.0 <0.6.0;
 
-import "./PokemonFactory.sol";
+import "./PokemonOwnership.sol";
 
-contract CryptoPoke is PokemonFactory {
+contract CryptoPoke is PokemonOwnership {
     
 }
